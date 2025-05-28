@@ -1,0 +1,17 @@
+{
+  "name": "monkster-chatbot",
+  "version": "1.0.0",
+  "description": "A grumpy monk chatbot dispensing reluctant wisdom",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'No build step needed for static files'",
+    "test": "echo 'No tests specified'",
+    "azure:deploy": "az staticwebapp create --name \"monkster-chatbot\" --resource-group \"monkster-rg\" --source . --branch main --app-location \"/\" --api-location \"api\" --output-location \"public\""
+  },
+  "dependencies": {
+    "@azure/openai": "^1.0.0-beta.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  }
+}

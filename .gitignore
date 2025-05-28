@@ -1,0 +1,39 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+local.settings.json
+
+# Azure Functions artifacts
+bin
+obj
+appsettings.json
+
+# Build files
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumentation files
+coverage/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Monkster - Your Reluctant Wisdom Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8B5A2B; /* Monk robe brown */
+            --accent-color: #B89D7A; /* Sandy temple color */
+            --dark-color: #171717;
+            --light-color: #f8f9fa;
+            --message-sent: #0B93F6;
+            --message-received: #262626;
+            --transition-speed: 0.3s;
+            --bg-gradient: linear-gradient(to bottom, #111, #333);
+            --chat-bg: #1a1a1a;
+            --monk-gradient: linear-gradient(to right, #8B5A2B, #B89D7A);
+            --temple-bg: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80');
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #222;
+            background-image:
+                linear-gradient(rgba(34,34,34,0.95), rgba(34,34,34,0.95)),
+                var(--temple-bg),
+                radial-gradient(circle at 25% 25%, rgba(200, 100, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(90, 90, 255, 0.15) 0%, transparent 50%);
+            background-size: cover, cover, auto, auto;
+            background-position: center center, center center, left top, right bottom;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }          .container {
+            max-width: 420px; /* Increased from 340px to 420px */
+            margin: 0 auto;
+            padding: 0;
+            width: 100%;
+            height: 755px; /* Increased slightly to maintain proportion */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            display: none;
+        }        .phone-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;  /* Increased from 370px to 450px */
+            height: 780px; /* Slightly increased height to maintain proportion */
+            background-color: #111;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 10px rgba(255, 255, 255, 0.1),
+                        inset 0 0 5px rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            z-index: -1;
+            border: 1px solid #333;
+        }
+        
+        .phone-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            width: 160px;
+            height: 28px;
+            background-color: #111;
+            border-radius: 0 0 20px 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        
+        .phone-sensors {
+            position: absolute;
+            top: 10px;
+            width: 12px;
+            height: 12px;
+            background-color: #2a2a2a;
+            border-radius: 50%;
+            left: calc(50% + 40px);
+            z-index: 15;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .phone-sensors::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #222;
+            border-radius: 50%;
+            top: 2px;
+            left: -46px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .phone-sensors::after {
+            content: '';
+            position: absolute;
+            width: 52px;
+            height: 6px;
+            background-color: #222;
+            border-radius: 10px;
+            top: 3px;
+            left: -36px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 15px;
+            z-index: 5;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-time {
+            font-weight: bold;
+        }
+        
+        .grumpy-face {
+            font-size: 2rem;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        
+        .grumpy-face:hover {
+            animation: shake 0.5s ease;
+        }
+        
+        .header p {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+          .chat-container {
+            flex: 1;
+            background-color: var(--chat-bg);
+            border-radius: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            position: relative;
+        }
+        
+        .coffee-stain {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(ellipse at center, rgba(93, 64, 55, 0.3) 0%, rgba(93, 64, 55, 0.1) 60%, rgba(93, 64, 55, 0) 100%);
+            border-radius: 50%;
+            transform: rotate(35deg);
+            z-index: 0;
+        }
+        
+        .chat-header {
+            background: linear-gradient(90deg, #1a1a1a 80%, #B89D7A22 100%);
+            padding: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1.5px solid #B89D7A44;
+            position: relative;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 5;
+        }
+        
+        .chat-header::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #B89D7A44 0%, #fff0 100%);
+        }
+          .chat-header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header-left img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
+        
+        .monk-avatar {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Make monk avatar look clickable */
+            transition: box-shadow 0.2s;
+            box-shadow: 0 0 0 0 #FFD70000;
+        }
+        
+        .monk-avatar:hover {
+            box-shadow: 0 0 24px 6px #FFD70088, 0 0 0 4px #B89D7A44;
+            filter: brightness(1.08) saturate(1.1);
+        }
+        
+        .monk-avatar:active {
+            box-shadow: 0 0 32px 10px #FFD700CC;
+        }
+        
+        .chat-header-title {
+            font-weight: bold;
+        }
+        
+        .chat-header-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .mood-indicator {
+            background-color: #e74c3c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            animation: pulse 2s infinite;
+        }
+        
+        .mood-indicator i {
+            margin-right: 5px;
+        }        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%23333' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+            gap: 8px; /* Add consistent spacing between messages */
+        }
+        
+        /* Improve scrollbar visibility */
+        .messages::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .messages::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        
+        .messages::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .messages::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+          .message {
+            margin-bottom: 15px;
+            max-width: 85%; /* Increased from 80% to 85% to use more horizontal space */
+            padding: 12px 16px;
+            border-radius: 20px;
+            position: relative;
+            line-height: 1.5;
+            font-size: 1rem; /* Slightly increased font size */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--message-sent);
+            color: white;
+            border-bottom-right-radius: 5px;
+            animation: slideInRight 0.3s ease;
+        }
+          .bot-message {
+            align-self: flex-start;
+            background-color: var(--message-received);
+            color: #eee;
+            border-bottom-left-radius: 5px;
+            animation: slideInLeft 0.3s ease;
+            border-left: 3px solid #8B5A2B;
+        }
+        
+        .bot-emoji {
+            font-size: 24px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+          .thought-bubble {
+            position: absolute;
+            top: -30px;
+            left: 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background-color: rgba(20, 20, 20, 0.8);
+            padding: 4px 10px;
+            border-radius: 12px;
+            border-bottom-left-radius: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-style: italic;
+        }
+        
+        .bot-message:hover .thought-bubble {
+            opacity: 1;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+            font-family: monospace;
+        }
+          .input-area {
+            display: flex;
+            padding: 12px 15px;
+            background-color: rgba(20, 20, 20, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 5;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            background-color: #2a2a2a;
+            color: white;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        #user-input::placeholder {
+            color: #888;
+            font-style: italic;
+        }
+        
+        #user-input:focus {
+            outline: none;
+            background-color: #333;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+          #send-button {
+            background: linear-gradient(135deg, #8B5A2B 0%, #B89D7A 100%);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(139, 90, 43, 0.4);
+        }
+        
+        #send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(150, 71, 255, 0.6);
+        }
+        
+        #send-button:active {
+            transform: scale(0.95);
+        }
+          .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin: 10px 0 15px 15px;
+            animation: fadeIn 0.3s;
+            display: none;
+            padding: 10px 20px;
+            background-color: rgba(30, 30, 30, 0.7);
+            border-radius: 20px;
+            width: fit-content;
+        }
+        
+        .typing-indicator.active {
+            display: flex;
+        }
+          .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: #8B5A2B;
+            margin: 0 3px;
+            opacity: 0.8;
+        }
+        
+        .typing-indicator span:nth-child(1) {
+            animation: bounce 1s infinite;
+            animation-delay: 0s;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation: bounce 1s infinite;
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation: bounce 1s infinite;
+            animation-delay: 0.4s;
+        }
+          .footer {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: #95a5a6;
+            font-size: 0.8rem;
+            font-style: italic;
+            width: 100%;
+            padding: 0 10px;
+            line-height: 1.3;
+        }
+          .footer a {
+            color: #B89D7A;
+            text-decoration: none;
+        }
+        
+        .coffee-cup {
+            position: fixed;
+            bottom: -20px;
+            left: 20px;
+            font-size: 5rem;
+            transform: rotate(10deg);
+            opacity: 0.2;
+            z-index: -1;
+        }
+          /* Modern idea bubble above floating monk */
+        .idea-bubble {
+            position: fixed;
+            left: 120px;
+            top: calc(50% - 90px);
+            transform: translateY(-100%) scale(1);
+            min-width: 180px;
+            max-width: 260px;
+            padding: 18px 22px 18px 22px;
+            background: linear-gradient(135deg, #fffbe6 80%, #ffe066 100%);
+            color: #3a2c0a;
+            font-family: 'Segoe UI', 'SF Pro Text', Arial, sans-serif;
+            font-size: 1.05rem;
+            font-style: italic;
+            border-radius: 22px 22px 22px 8px;
+            box-shadow: 0 6px 32px 0 #b89d7a33, 0 2px 8px #b89d7a22;
+            z-index: 20;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: floatIdea 4s ease-in-out infinite alternate;
+        }
+        .idea-bubble .idea-icon {
+            font-size: 1.6rem;
+            color: #ffd700;
+            margin-top: 2px;
+            filter: drop-shadow(0 2px 4px #ffe06688);
+        }
+        .idea-bubble::after {
+            content: '';
+            position: absolute;
+            left: 32px;
+            bottom: -18px;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 60% 60%, #fffbe6 70%, #ffe066 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #b89d7a22;
+            z-index: 1;
+            opacity: 0.7;
+        }
+        @keyframes floatIdea {
+            0% { transform: translateY(-100%) scale(1); }
+            100% { transform: translateY(-110%) scale(1.04); }
+        }
+        
+        /* Improved sidebar layout and positioning */
+        .sidebar-monk {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .sidebar-monk .idea-bubble {
+            position: relative;
+            top: -60px;
+            left: 0;
+            margin: 0 0 20px 0;
+            pointer-events: auto;
+            transform: none;
+            animation: floatInPlace 4s ease-in-out infinite alternate;
+        }
+        
+        @keyframes floatInPlace {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.04); }
+        }
+        
+        .sidebar-monk .floating-monk {
+            position: relative;
+            top: 0;
+            left: 0;
+            margin: 0;
+            pointer-events: auto;
+            transform: none;
+            animation: floatMonk 6s ease-in-out infinite;
+        }
+        
+        @keyframes floatMonk {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @media (max-width: 1200px) {
+            .sidebar-monk {
+                width: 220px;
+            }
+            
+            .sidebar-monk .idea-bubble {
+                max-width: 220px;
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar-monk {
+                width: 180px;
+                left: 10px;
+            }
+            
+            .sidebar-monk .floating-monk svg {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .sidebar-monk .idea-bubble {
+                max-width: 180px;
+                font-size: 0.9rem;
+                padding: 14px 18px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-monk {
+                display: none;
+            }
+            
+            .container {
+                max-width: 100%;
+                border-radius: 20px;
+            }
+            
+            .phone-frame {
+                width: 100%;
+                max-width: 380px;
+                height: 740px;
+                border-radius: 30px;
+            }
+        }
+        
+        /* Mobile portrait mode */
+        @media (max-width: 480px) {
+            .phone-frame {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                top: 0;
+                left: 0;
+                transform: none;
+                padding: 0;
+            }
+            
+            .container {
+                height: 100%;
+                border-radius: 0;
+            }
+            
+            .chat-container {
+                border-radius: 0;
+            }
+        }
+        
+        /* Ensure consistent layout in landscape mode on mobile */
+        @media (max-height: 500px) and (max-width: 900px) {
+            .phone-frame {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .container {
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .messages {
+                max-height: calc(100vh - 120px);
+            }
+        }
+        
+        .petal {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+            width: 32px;
+            height: 32px;
+            opacity: 0.7;
+            animation: fall 8s linear infinite;
+        }
+        
+        .container {
+            overflow: hidden; /* Ensure petals stay inside */
+            position: relative;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-40px) rotate(0deg) scale(0.7); opacity: 0.7; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(110%) rotate(360deg) scale(1.1); opacity: 0; }
+        }
+        
+        .floating-monk {
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 180px;
+            z-index: 30; /* Increased to ensure visibility above background and below idea bubble */
+            animation: floatMonk 6s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 0 0 0 #FFD70000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            .floating-monk { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar: floating monk and idea bubble, fixed on the left -->
+    <div class="sidebar-monk">
+        <div class="idea-bubble">
+            <span class="idea-icon"><i class="fas fa-lightbulb"></i></span>
+            <span>"The answers you seek lie within... but I guess I'll help since you clearly haven't figured it out yet."</span>
+        </div>
+        <div class="floating-monk">
+            <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" style="width: 140px; height: 140px;">
+                <defs>
+                    <radialGradient id="float-head-gradient" cx="50%" cy="40%" r="50%" fx="50%" fy="40%">
+                        <stop offset="0%" stop-color="#E2C799" />
+                        <stop offset="80%" stop-color="#B89D7A" />
+                        <stop offset="100%" stop-color="#9F8B68" />
+                    </radialGradient>
+                    <linearGradient id="float-robe-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#8B5A2B" />
+                        <stop offset="100%" stop-color="#614027" />
+                    </linearGradient>
+                    <radialGradient id="lotus-gradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#fffbe6" />
+                        <stop offset="100%" stop-color="#e6d7b9" />
+                    </radialGradient>
+                </defs>
+                <!-- Zen lotus base -->
+                <ellipse cx="100" cy="200" rx="50" ry="18" fill="url(#lotus-gradient)" opacity="0.7" />
+                <ellipse cx="100" cy="210" rx="30" ry="8" fill="#fff" opacity="0.2" />
+                <!-- Monk crossed legs (simple stylized) -->
+                <ellipse cx="80" cy="190" rx="22" ry="10" fill="#614027" opacity="0.85" />
+                <ellipse cx="120" cy="190" rx="22" ry="10" fill="#8B5A2B" opacity="0.85" />
+                <!-- Monk feet -->
+                <ellipse cx="70" cy="200" rx="8" ry="4" fill="#B89D7A" opacity="0.8" />
+                <ellipse cx="130" cy="200" rx="8" ry="4" fill="#B89D7A" opacity="0.8" />
+                <!-- Monk robe draped over legs -->
+                <path d="M60,180 Q100,170 140,180 Q130,200 100,195 Q70,200 60,180 Z" fill="url(#float-robe-gradient)" />
+                <!-- Monk body with robe -->
+                <path d="M70,180 Q100,160 130,180 Q120,190 100,188 Q80,190 70,180 Z" fill="url(#float-robe-gradient)" />
+                <path d="M80,180 Q100,175 120,180" stroke="#614027" stroke-width="2" fill="none" opacity="0.5" />
+                <path d="M90,190 Q100,188 110,190" stroke="#614027" stroke-width="2" fill="none" opacity="0.5" />
+                <!-- Monk head with improved shape -->
+                <ellipse cx="100" cy="110" rx="48" ry="52" fill="url(#float-head-gradient)" />
+                <!-- Monk ears, more symmetrical -->
+                <ellipse cx="52" cy="110" rx="12" ry="18" fill="#B89D7A" stroke="#9F8B68" stroke-width="2" />
+                <ellipse cx="148" cy="110" rx="12" ry="18" fill="#B89D7A" stroke="#9F8B68" stroke-width="2" />
+                <!-- Eyes (closed, grumpy) -->
+                <path d="M80,120 Q90,115 100,120" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+                <path d="M120,120 Q110,115 100,120" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+                <!-- Grumpy eyebrows, more expressive -->
+                <path d="M75,105 Q90,95 105,105" stroke="#302515" stroke-width="5" stroke-linecap="round" fill="none" />
+                <path d="M125,105 Q110,95 95,105" stroke="#302515" stroke-width="5" stroke-linecap="round" fill="none" />
+                <!-- Wrinkles -->
+                <path d="M90,100 Q100,97 110,100" stroke="#9F8B68" stroke-width="2" fill="none" opacity="0.3" />
+                <path d="M80,140 Q100,145 120,140" stroke="#9F8B68" stroke-width="2" fill="none" opacity="0.3" />
+                <!-- Mouth (grumpy, centered) -->
+                <path d="M90,135 Q100,130 110,135" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+                <!-- Bald head shine -->
+                <ellipse cx="100" cy="90" rx="18" ry="8" fill="#fff" opacity="0.18" />
+                <ellipse cx="100" cy="85" rx="10" ry="4" fill="#fff" opacity="0.25" />
+                <!-- Subtle nose, centered -->
+                <path d="M100,125 L100,132 Q102,134 100,133" stroke="#302515" stroke-width="2" fill="none" />
+                <!-- Zen beads -->
+                <circle cx="80" cy="170" r="5" fill="#bfa76a" opacity="0.7" />
+                <circle cx="90" cy="175" r="4" fill="#bfa76a" opacity="0.7" />
+                <circle cx="100" cy="178" r="3.5" fill="#bfa76a" opacity="0.7" />
+                <circle cx="110" cy="175" r="4" fill="#bfa76a" opacity="0.7" />
+                <circle cx="120" cy="170" r="5" fill="#bfa76a" opacity="0.7" />
+                <!-- Monk hands resting in lap (meditation) -->
+                <ellipse cx="100" cy="185" rx="10" ry="5" fill="#B89D7A" opacity="0.9" />
+                <ellipse cx="100" cy="185" rx="5" ry="2.5" fill="#9F8B68" opacity="0.7" />
+            </svg>
+        </div>
+    </div>
+    <!-- Centered phone frame and chat container as before -->
+    <div class="phone-frame">
+        <div class="phone-inner">
+            <div class="phone-notch"></div>
+            <div class="phone-sensors"></div>
+            <div class="status-bar">
+                <div class="status-left">
+                    <i class="fas fa-signal"></i>
+                    <span>5G</span>
+                </div>
+                <div class="status-time" id="status-time">12:30</div>
+                <div class="status-right">
+                    <i class="fas fa-battery-three-quarters"></i>
+                    <span>78%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="petal-container" style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; pointer-events:none; z-index:5;"></div>
+        <div class="header">
+            <h1><span class="grumpy-face">😑</span> Monkster</h1>
+            <p>"Enlightenment comes to those who wait...and wait...and wait"</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="coffee-stain"></div>
+              <div class="chat-header">                  <div class="chat-header-left">                <div class="monk-avatar" id="monk-avatar">
+                        <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;">
+            <defs>
+                <radialGradient id="float-head-gradient" cx="50%" cy="40%" r="50%" fx="50%" fy="40%">
+                    <stop offset="0%" stop-color="#E2C799" />
+                    <stop offset="80%" stop-color="#B89D7A" />
+                    <stop offset="100%" stop-color="#9F8B68" />
+                </radialGradient>
+                <linearGradient id="float-robe-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#8B5A2B" />
+                    <stop offset="100%" stop-color="#614027" />
+                </linearGradient>
+                <radialGradient id="lotus-gradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#fffbe6" />
+                    <stop offset="100%" stop-color="#e6d7b9" />
+                </radialGradient>
+            </defs>
+            <!-- Zen lotus base -->
+            <ellipse cx="100" cy="200" rx="50" ry="18" fill="url(#lotus-gradient)" opacity="0.7" />
+            <ellipse cx="100" cy="210" rx="30" ry="8" fill="#fff" opacity="0.2" />
+            <!-- Monk crossed legs (simple stylized) -->
+            <ellipse cx="80" cy="190" rx="22" ry="10" fill="#614027" opacity="0.85" />
+            <ellipse cx="120" cy="190" rx="22" ry="10" fill="#8B5A2B" opacity="0.85" />
+            <!-- Monk feet -->
+            <ellipse cx="70" cy="200" rx="8" ry="4" fill="#B89D7A" opacity="0.8" />
+            <ellipse cx="130" cy="200" rx="8" ry="4" fill="#B89D7A" opacity="0.8" />
+            <!-- Monk robe draped over legs -->
+            <path d="M60,180 Q100,170 140,180 Q130,200 100,195 Q70,200 60,180 Z" fill="url(#float-robe-gradient)" />
+            <!-- Monk body with robe -->
+            <path d="M70,180 Q100,160 130,180 Q120,190 100,188 Q80,190 70,180 Z" fill="url(#float-robe-gradient)" />
+            <path d="M80,180 Q100,175 120,180" stroke="#614027" stroke-width="2" fill="none" opacity="0.5" />
+            <path d="M90,190 Q100,188 110,190" stroke="#614027" stroke-width="2" fill="none" opacity="0.5" />
+            <!-- Monk head with improved shape -->
+            <ellipse cx="100" cy="110" rx="48" ry="52" fill="url(#float-head-gradient)" />
+            <!-- Monk ears, more symmetrical -->
+            <ellipse cx="52" cy="110" rx="12" ry="18" fill="#B89D7A" stroke="#9F8B68" stroke-width="2" />
+            <ellipse cx="148" cy="110" rx="12" ry="18" fill="#B89D7A" stroke="#9F8B68" stroke-width="2" />
+            <!-- Eyes (closed, grumpy) -->
+            <path d="M80,120 Q90,115 100,120" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+            <path d="M120,120 Q110,115 100,120" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+            <!-- Grumpy eyebrows, more expressive -->
+            <path d="M75,105 Q90,95 105,105" stroke="#302515" stroke-width="5" stroke-linecap="round" fill="none" />
+            <path d="M125,105 Q110,95 95,105" stroke="#302515" stroke-width="5" stroke-linecap="round" fill="none" />
+            <!-- Wrinkles -->
+            <path d="M90,100 Q100,97 110,100" stroke="#9F8B68" stroke-width="2" fill="none" opacity="0.3" />
+            <path d="M80,140 Q100,145 120,140" stroke="#9F8B68" stroke-width="2" fill="none" opacity="0.3" />
+            <!-- Mouth (grumpy, centered) -->
+            <path d="M90,135 Q100,130 110,135" stroke="#302515" stroke-width="3" fill="none" stroke-linecap="round" />
+            <!-- Bald head shine -->
+            <ellipse cx="100" cy="90" rx="18" ry="8" fill="#fff" opacity="0.18" />
+            <ellipse cx="100" cy="85" rx="10" ry="4" fill="#fff" opacity="0.25" />
+            <!-- Subtle nose, centered -->
+            <path d="M100,125 L100,132 Q102,134 100,133" stroke="#302515" stroke-width="2" fill="none" />
+            <!-- Zen beads -->
+            <circle cx="80" cy="170" r="5" fill="#bfa76a" opacity="0.7" />
+            <circle cx="90" cy="175" r="4" fill="#bfa76a" opacity="0.7" />
+            <circle cx="100" cy="178" r="3.5" fill="#bfa76a" opacity="0.7" />
+            <circle cx="110" cy="175" r="4" fill="#bfa76a" opacity="0.7" />
+            <circle cx="120" cy="170" r="5" fill="#bfa76a" opacity="0.7" />
+            <!-- Monk hands resting in lap (meditation) -->
+            <ellipse cx="100" cy="185" rx="10" ry="5" fill="#B89D7A" opacity="0.9" />
+            <ellipse cx="100" cy="185" rx="5" ry="2.5" fill="#9F8B68" opacity="0.7" />
+        </svg>
+                        </div>
+                        <div>
+                            <div class="chat-header-title">Monkster</div>
+                            <div class="chat-header-subtitle">Reluctant wisdom dispenser</div>
+                        </div>
+                    </div>
+                    <div class="mood-indicator">
+                        <i class="fas fa-om"></i> Deep Sigh Mode
+                    </div>
+                </div>
+                
+                <div class="messages" id="chat-messages">
+                    <!-- Messages will be displayed here -->                <div class="message bot-message">
+                        <span class="thought-bubble">*sigh* years of meditation for this...</span>
+                        <span class="bot-emoji">😑</span> I see another soul seeks guidance on the path. What worldly question disturbs my spiritual contemplation today?
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                  <div class="input-area">
+                    <input type="text" id="user-input" placeholder="Ask your question, seeker of wisdom...">
+                    <button id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+              <div class="footer">
+                Powered by Azure OpenAI and ancient wisdom (with a modern attitude)
+            </div>
+        </div>      <div class="coffee-cup">🍵</div>
+    </div>
+    <!-- iPhone home indicator -->
+    <div class="home-indicator"></div>    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const grumpyFace = document.querySelector('.grumpy-face');
+            const statusTimeElement = document.getElementById('status-time');
+            const wisdomSound = document.getElementById('wisdom-sound');
+            
+            // Update the status bar time
+            function updateStatusTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                statusTimeElement.textContent = `${hours}:${minutes}`;
+            }
+            
+            // Update time initially and every minute
+            updateStatusTime();
+            setInterval(updateStatusTime, 60000);
+              // Monk emojis for the bot's responses
+            const botEmojis = ['🧘', '😑', '🙏', '🧠', '🍵', '🕊️', '📿', '🪔', '👁️', '🔮', '😌', '👴', '🌿', '👘'];
+            const thoughtBubbles = [
+                '*deep sigh*',
+                'patience is a virtue I lack',
+                'this interrupts my meditation',
+                'breathe in, breathe out...',
+                'thousand-year wisdom for this?',
+                'another test of my patience',
+                'om... no... om...',
+                'the burden of enlightenment'
+            ];
+            
+            // Monk wisdom quotes (shared pool)
+            const monkWisdomQuotes = [
+                "Clicking on me won't bring enlightenment. Nice try though.",
+                "Yes, disturb the meditating monk. Very wise.",
+                "The sound of one hand facepalming...",
+                "I've been meditating for 40 years and THIS is my reward?",
+                "Your digital karma just took a hit.",
+                "Enlightenment is overrated. So is clicking.",
+                "If wisdom were easy, you wouldn't be here.",
+                "Disturb the monk, receive the sigh.",
+                "You seek answers, I seek silence.",
+                "A click is not a koan, but nice try."
+            ];
+            
+            // Show typing indicator
+            function showTyping() {
+                typingIndicator.classList.add('active');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Hide typing indicator
+            function hideTyping() {
+                typingIndicator.classList.remove('active');
+            }
+            
+            // Generate timestamp
+            function getTime() {
+                const now = new Date();
+                return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // Add message to chat
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
+                
+                // Add thought bubble for bot messages
+                if (!isUser) {
+                    const thoughtBubble = document.createElement('span');
+                    thoughtBubble.className = 'thought-bubble';
+                    thoughtBubble.textContent = thoughtBubbles[Math.floor(Math.random() * thoughtBubbles.length)];
+                    messageDiv.appendChild(thoughtBubble);
+                    
+                    // Add emoji for bot messages
+                    const emoji = botEmojis[Math.floor(Math.random() * botEmojis.length)];
+                    const emojiSpan = document.createElement('span');
+                    emojiSpan.className = 'bot-emoji';
+                    emojiSpan.textContent = emoji;
+                    messageDiv.appendChild(emojiSpan);
+                }
+                
+                // Add message text
+                const textSpan = document.createTextNode(text);
+                messageDiv.appendChild(textSpan);
+                
+                // Add timestamp
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = getTime();
+                messageDiv.appendChild(timeDiv);
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+              // Send message
+            async function sendMessage() {
+                const userMessage = userInput.value.trim();
+                if (!userMessage) return;
+                
+                // Display user message
+                addMessage(userMessage, true);
+                userInput.value = '';
+                
+                // Show typing indicator with dynamic timing
+                showTyping();
+                const thinkingTime = Math.random() * 1000 + 1000; // 1-2 seconds of "thinking"
+                
+                try {
+                    // Call API to get bot response
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Hide typing indicator after a delay to simulate thinking
+                    setTimeout(() => {
+                        hideTyping();
+                        addMessage(data.message);
+                        
+                        // Update mood randomly
+                        updateMood();
+                    }, thinkingTime);                } catch (error) {
+                    console.error('Error:', error);
+                    hideTyping();
+                    addMessage("The universe is in disharmony. Or perhaps it's just the server. Either way, try again when the cosmic forces align.");
+                }
+            }
+              // Update the monk mood indicator randomly
+            function updateMood() {
+                const moods = [
+                    '<i class="fas fa-om"></i> Deep Sigh Mode',
+                    '<i class="fas fa-mug-hot"></i> Brewing Herbal Tea',
+                    '<i class="fas fa-clock"></i> Meditation Interrupted',
+                    '<i class="fas fa-praying-hands"></i> Reluctantly Enlightened',
+                    '<i class="fas fa-moon"></i> Contemplating Existence'
+                ];
+                
+                const moodElement = document.querySelector('.mood-indicator');
+                if (Math.random() > 0.7) { // 30% chance to change mood
+                    moodElement.innerHTML = moods[Math.floor(Math.random() * moods.length)];
+                }
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Add animation to grumpy face
+            grumpyFace.addEventListener('click', () => {
+                grumpyFace.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    grumpyFace.style.animation = 'float 3s ease-in-out infinite';
+                }, 500);
+                      // Easter egg: change emoji sometimes
+                if (Math.random() > 0.7) {
+                    grumpyFace.textContent = botEmojis[Math.floor(Math.random() * botEmojis.length)];
+                }
+            });
+            
+            // Add interaction to floating monk
+            const floatingMonk = document.querySelector('.floating-monk');
+            if (floatingMonk) {
+                floatingMonk.addEventListener('click', () => {
+                    // Make the monk angrier when clicked
+                    const monk = floatingMonk.querySelector('svg');
+                    monk.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        monk.style.transform = 'scale(1)';
+                    }, 300);
+                    // Add a grumpy wisdom quote
+                    const randomQuote = monkWisdomQuotes[Math.floor(Math.random() * monkWisdomQuotes.length)];
+                    addMessage(randomQuote);
+                    
+                    // Play wisdom sound
+                    if (wisdomSound) { wisdomSound.currentTime = 0; wisdomSound.play(); }
+                });
+            }
+            // Add interaction to chat header monk avatar
+            const monkAvatar = document.querySelector('.monk-avatar');
+            if (monkAvatar) {
+                monkAvatar.style.cursor = 'pointer';
+                monkAvatar.title = 'Tap for wisdom (or grumpiness)';
+                monkAvatar.addEventListener('click', () => {
+                    monkAvatar.querySelector('svg').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        monkAvatar.querySelector('svg').style.animation = 'subtlePulse 4s ease-in-out infinite';
+                    }, 500);
+                    const randomQuote = monkWisdomQuotes[Math.floor(Math.random() * monkWisdomQuotes.length)];
+                    addMessage(randomQuote);
+                    
+                    // Play wisdom sound
+                    if (wisdomSound) { wisdomSound.currentTime = 0; wisdomSound.play(); }
+                });
+            }
+        });
+    </script>
+    <!-- Decorative cherry blossom petals -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cherry blossom petals animation
+            function createPetal() {
+                const petal = document.createElement('img');
+                petal.src = 'https://svgshare.com/i/13kA.svg';
+                petal.className = 'petal';
+                const container = document.getElementById('petal-container');
+                if (!container) return; // Safety check
+                
+                const containerWidth = container.offsetWidth || 420;
+                petal.style.left = Math.random() * (containerWidth - 32) + 'px';
+                petal.style.animationDuration = (6 + Math.random() * 4) + 's';
+                petal.style.opacity = 0.6 + Math.random() * 0.3;
+                container.appendChild(petal);
+                
+                // Clean up petals after animation completes
+                setTimeout(() => {
+                    if (petal && petal.parentNode) {
+                        petal.remove();
+                    }
+                }, 9000);
+            }
+            
+            // Initialize petals with staggered start
+            for (let i = 0; i < 6; i++) {
+                setTimeout(createPetal, i * 800);
+            }
+            
+            // Continue adding petals over time
+            setInterval(createPetal, 1200);
+        });
+    </script>
+    <!-- Wisdom sound effect -->
+    <audio id="wisdom-sound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b2b6b2.mp3" preload="auto"></audio>
+</body>
+</html>
